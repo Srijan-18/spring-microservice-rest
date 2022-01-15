@@ -2,10 +2,7 @@ package com.practice.spring.microservice.user;
 
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class UserDaoService {
@@ -32,5 +29,18 @@ public class UserDaoService {
     public User findOne(int id) {
         Optional<User> user = users.stream().filter(userPointer -> userPointer.getId().equals(id)).findFirst();
         return user.orElse(null);
+    }
+
+    public User deleteById(int id) {
+        Iterator<User> userIterator = users.iterator();
+
+        while(userIterator.hasNext()) {
+            User user = userIterator.next();
+            if (user.getId().equals(id)) {
+                userIterator.remove();
+                return user;
+            }
+        }
+        return null;
     }
 }
