@@ -36,7 +36,7 @@ public class UserController {
     //create a user ->post
 
     @PostMapping("/users")
-    public ResponseEntity<User> addUser(@RequestBody User user){
+    public ResponseEntity<User> addUser(@Valid @RequestBody User user){
         User savedUser = service.save(user);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri()
