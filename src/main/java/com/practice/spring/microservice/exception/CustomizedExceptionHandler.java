@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+
 import java.util.Date;
 
 @ControllerAdvice
@@ -40,13 +41,21 @@ public class CustomizedExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * This method handles MethodArgumentNotValidException in case of invalid input given in request body
+     * @param ex
+     * @param headers
+     * @param status
+     * @param request
+     * @return
+     */
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         BindingResult bindingResult = ex.getBindingResult();
         StringBuilder errorStringBuilder = new StringBuilder();
         bindingResult.getAllErrors().forEach(objectError -> errorStringBuilder.append(objectError.getDefaultMessage()).append(", "));
-        errorStringBuilder.replace(errorStringBuilder.lastIndexOf(", "), errorStringBuilder.length(), "");
+        errorStringBuilder.replace(errorStringBuilder.lastIndexOf(", "), errorStringBuilder.length(), ".");
         ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), "Validation Failed", errorStringBuilder.toString());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
