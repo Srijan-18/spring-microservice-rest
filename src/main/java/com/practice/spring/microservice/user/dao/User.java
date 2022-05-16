@@ -1,4 +1,4 @@
-package com.practice.spring.microservice.user;
+package com.practice.spring.microservice.user.dao;
 
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;

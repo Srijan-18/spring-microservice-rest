@@ -1,5 +1,6 @@
-package com.practice.spring.microservice.user;
+package com.practice.spring.microservice.user.service;
 
+import com.practice.spring.microservice.user.dao.User;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
