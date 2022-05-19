@@ -12,9 +12,9 @@ public class UserDaoService {
     private static int counter = 0;
 
     static {
-        users.add(new User(++counter, "Srijan", new Date()));
-        users.add(new User(++counter, "Saksham", new Date()));
-        users.add(new User(++counter, "Sanchita", new Date()));
+        users.add(new User(++counter, "User1", new Date()));
+        users.add(new User(++counter, "USer2", new Date()));
+        users.add(new User(++counter, "User3", new Date()));
     }
 
     public List<User> findAll() {
@@ -34,14 +34,14 @@ public class UserDaoService {
 
     public User deleteById(int id) {
         Iterator<User> userIterator = users.iterator();
-
+        User user = null;
         while(userIterator.hasNext()) {
-            User user = userIterator.next();
+             user = userIterator.next();
             if (user.getId().equals(id)) {
                 userIterator.remove();
                 return user;
             }
         }
-        return null;
+        return user;
     }
 }
