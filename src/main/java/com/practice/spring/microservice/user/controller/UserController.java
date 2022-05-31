@@ -1,5 +1,9 @@
 package com.practice.spring.microservice.user.controller;
 
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.practice.spring.microservice.configuration.ApplicationConfig;
 import com.practice.spring.microservice.exception.UserNotFoundException;
 import com.practice.spring.microservice.user.dao.User;
 import com.practice.spring.microservice.user.service.UserDaoService;
@@ -7,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -19,6 +24,8 @@ public class UserController {
 
     @Autowired
     private UserDaoService service;
+    @Autowired
+    private ApplicationConfig applicationConfig;
 
     //retrieve all users -> get/users
     @GetMapping(path = "/users")
@@ -31,17 +38,18 @@ public class UserController {
     public User retrieveAUser(@PathVariable int id) {
         User user = service.findOne(id);
 
-        if(user == null){
+        if (user == null) {
             throw new UserNotFoundException(id);
         }
         return user;
     }
+
     //retrieve one user -> get/user/{id} (HATEOAS)
     @GetMapping(path = "/users/hateoas/{id}")
     public EntityModel<User> retrieveAUserHATEOAS(@PathVariable int id) {
         User user = service.findOne(id);
 
-        if(user == null){
+        if (user == null) {
             throw new UserNotFoundException(id);
         }
         EntityModel<User> userEntityModel = EntityModel.of(user);
@@ -56,7 +64,7 @@ public class UserController {
     //create a user ->post
 
     @PostMapping("/users")
-    public ResponseEntity<User> addUser(@Valid @RequestBody User user){
+    public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
         User savedUser = service.save(user);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri()
@@ -73,9 +81,25 @@ public class UserController {
     @DeleteMapping(path = "/users/{id}")
     public ResponseEntity deleteUser(@PathVariable int id) {
         User user = service.deleteById(id);
-        if(user == null){
+        if (user == null) {
             throw new UserNotFoundException(id);
         }
         return ResponseEntity.ok().build();
     }
+
+    //get all users but with filtered information
+    @GetMapping(path = "/users/filterdynamic")
+    public MappingJacksonValue retrieveAllUsersDynamicFilter() {
+
+        List<User> userList = service.findAll();
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
+                                            .filterOutAllExcept(applicationConfig.getAllowedFields()
+                                                    .toArray(String[]::new));
+        FilterProvider filters = new SimpleFilterProvider().addFilter("UserFilter", filter);
+        MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(userList);
+            mappingJacksonValue.setFilters(filters);
+
+        return mappingJacksonValue;
+    }
+
 }

@@ -1,0 +1,5 @@
+application:
+  user:
+    allowed-fields:
+      - name
+      - id

@@ -13,7 +13,7 @@ public class UserDaoService {
 
     static {
         users.add(new User(++counter, "User1", new Date()));
-        users.add(new User(++counter, "USer2", new Date()));
+        users.add(new User(++counter, "User2", new Date()));
         users.add(new User(++counter, "User3", new Date()));
     }
 
