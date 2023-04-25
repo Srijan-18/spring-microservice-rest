@@ -14,3 +14,4 @@ target/
 /.mvn/wrapper/MavenWrapperDownloader.java
 /mvnw
 /mvnw.cmd
+/.metadata/

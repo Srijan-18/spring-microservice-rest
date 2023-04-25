@@ -37,7 +37,6 @@ public class UserController {
     @GetMapping(path = "/users/{id}")
     public User retrieveAUser(@PathVariable int id) {
         User user = service.findOne(id);
-
         if (user == null) {
             throw new UserNotFoundException(id);
         }
@@ -67,10 +66,7 @@ public class UserController {
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
         User savedUser = service.save(user);
 
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri()
-                .path("/{id}")
-                .buildAndExpand(savedUser.getId())
-                .toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").buildAndExpand(savedUser.getId()).toUri();
 
         return ResponseEntity.created(uri).build();
 
@@ -88,18 +84,19 @@ public class UserController {
     }
 
     //get all users but with filtered information
-    @GetMapping(path = "/users/filterdynamic")
+    @GetMapping(path = "/users/filter-dynamic")
     public MappingJacksonValue retrieveAllUsersDynamicFilter() {
 
         List<User> userList = service.findAll();
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
-                                            .filterOutAllExcept(applicationConfig.getAllowedFields()
-                                                    .toArray(String[]::new));
-        FilterProvider filters = new SimpleFilterProvider().addFilter("UserFilter", filter);
-        MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(userList);
-            mappingJacksonValue.setFilters(filters);
-
-        return mappingJacksonValue;
+        return getMappingJacksonValue(userList, applicationConfig.getAllowedFields().toArray(String[]::new));
     }
 
+    private <T> MappingJacksonValue getMappingJacksonValue(T result, String... fields) {
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept(fields);
+        FilterProvider filters = new SimpleFilterProvider().addFilter("UserFilter", filter);
+        MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(result);
+        mappingJacksonValue.setFilters(filters);
+        return mappingJacksonValue;
+    }
 }
+
